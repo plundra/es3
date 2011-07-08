@@ -1,0 +1,18 @@
+es3 - even simpler storage service
+==================================
+
+About:
+The goal is to create a very minimalistic storage service, without leaving out
+reliabilty; by replicating the data in a (hopefully) very simple manner.
+
+Current state:
+Proof-of-concept with bottle.py as a webframework works fairly well. It handles
+PUT-requests, GET-requests and can also list files.
+
+Example usage:
+ Server:
+  $ mkdir /tmp/es3storage
+  $ ./main.py
+
+ Client (upload):
+  $ curl -X PUT -T logo.png http://server:7070/logo.png
