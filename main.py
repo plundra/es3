@@ -15,11 +15,13 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 import os
-import time
 import mimetypes
 import bottle
+import logging
 
 STORAGE_DIR = "/tmp/es3storage"
+
+_log = logging.getLogger("es3main")
 
 def list(directory):
     """List content of directory"""
@@ -33,6 +35,11 @@ def list(directory):
 
     output += "</ul>"
     return output
+
+def replicate(data, path):
+    """Replicate file to slave"""
+    _log.warn("Not implemented! Should replicate %d bytes" % len(data))
+    pass
 
 @bottle.get("/:path#[a-zA-Z0-9./]*#")
 def get(path):
@@ -81,12 +88,23 @@ def put(path):
     if os.path.exists(filepath):
         bottle.abort(409, "File exists")
     
+    filedata = bottle.request.body.read()
+    
     with open(filepath, "wb") as f:
-        f.write(bottle.request.body.read())
+        f.write(filedata)
 
+    # Was this a copy or should make a copy somewhere?
+    # Check for querystring or header noting this.
+    if not (bottle.request.query.get("copy") or bottle.request.headers.get("X-ES3-COPY")):
+        _log.info("Making replica of %s" % path)
+        replicate(filedata, path)
+    else:
+        _log.info("No need for a copy")
+        
     bottle.response.status = 201
     return "Created"
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.NOTSET)
     assert os.path.isdir(STORAGE_DIR), "STORAGE_DIR exists and isdir()"
     bottle.run(host="0.0.0.0", port=7070)
