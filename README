@@ -5,6 +5,8 @@ About:
 The goal is to create a very minimalistic storage service, without leaving out
 reliabilty; by replicating the data in a (hopefully) very simple manner.
 
+Currently in a proof-of-concept state.
+
 Example usage:
 
  Server A:
