@@ -19,7 +19,7 @@ import mimetypes
 import bottle
 import logging
 
-STORAGE_DIR = "/tmp/es3storage"
+import config
 
 _log = logging.getLogger("es3main")
 
@@ -46,10 +46,10 @@ def get(path):
     """Method to deliver requested files"""
     
     # Set filepath based on request-URI
-    filepath = os.path.realpath(os.path.join(STORAGE_DIR, path))
+    filepath = os.path.realpath(os.path.join(config.STORAGE_DIR, path))
         
     # Double-check that the requested file is within STORAGE_DIR
-    if not filepath.startswith(STORAGE_DIR):
+    if not filepath.startswith(config.STORAGE_DIR):
         bottle.abort(403, "Forbidden")
     
     # Check if requested path is a directory
@@ -78,10 +78,10 @@ def put(path):
     """Method to store file on disk"""
     
     # Set filepath based on request-URI
-    filepath = os.path.realpath(os.path.join(STORAGE_DIR, path))
+    filepath = os.path.realpath(os.path.join(config.STORAGE_DIR, path))
     
     # Double-check that the requested file is within STORAGE_DIR
-    if not filepath.startswith(STORAGE_DIR):
+    if not filepath.startswith(config.STORAGE_DIR):
         bottle.abort(403, "Verboten")
 
     # Don't overwrite files
@@ -106,5 +106,5 @@ def put(path):
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.NOTSET)
-    assert os.path.isdir(STORAGE_DIR), "STORAGE_DIR exists and isdir()"
-    bottle.run(host="0.0.0.0", port=7070)
+    assert os.path.isdir(config.STORAGE_DIR), "STORAGE_DIR exists and isdir()"
+    bottle.run(host=config.HTTP_HOST, port=config.HTTP_PORT)
