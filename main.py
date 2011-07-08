@@ -19,7 +19,10 @@ import mimetypes
 import bottle
 import logging
 
+from urllib2 import URLError
+
 import config
+import putils
 
 _log = logging.getLogger("es3main")
 
@@ -38,9 +41,13 @@ def list(directory):
 
 def replicate(data, path):
     """Replicate file to slave"""
-    _log.warn("Not implemented! Should replicate %d bytes" % len(data))
-    pass
-
+    _log.info("Sending copy of %s to %s" % (path, config.REPLICATION_URL))
+    try:
+        putils.httpput(os.path.join(config.REPLICATION_URL, path), data,
+                       {"X-ES3-COPY": True})
+    except URLError, e:
+        _log.error("Failed to replicate %s: %s" % (path, e))
+    
 @bottle.get("/:path#[a-zA-Z0-9./]*#")
 def get(path):
     """Method to deliver requested files"""
