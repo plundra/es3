@@ -5,14 +5,22 @@ About:
 The goal is to create a very minimalistic storage service, without leaving out
 reliabilty; by replicating the data in a (hopefully) very simple manner.
 
-Current state:
-Proof-of-concept with bottle.py as a webframework works fairly well. It handles
-PUT-requests, GET-requests and can also list files.
-
 Example usage:
- Server:
+
+ Server A:
   $ mkdir /tmp/es3storage
+  $ grep REPLICATION_URL config.py
+  REPLICATION_URL = "http://server-b:7070/"
+  $ ./main.py
+
+ Server B:
+  $ mkdir /tmp/es3storage
+  $ grep REPLICATION_URL config.py
+  REPLICATION_URL = "http://server-a:7070/"
   $ ./main.py
 
  Client (upload):
-  $ curl -X PUT -T logo.png http://server:7070/logo.png
+  $ curl -X PUT -T logo.png http://server-a:7070/logo.png
+ 
+ Client (fetch):
+  $ curl -O http://server-b:7070/logo.png
